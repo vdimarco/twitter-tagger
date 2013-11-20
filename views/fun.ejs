@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tweets</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/javascripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="/javascripts/d3.js" type="text/javascript"></script>
+    <script src="/javascripts/animate.js" type="text/javascript"></script>
+    <style>
+      text {
+          font: bold 12px monospace;
+          display:inline;
+      }
+      .tweet {
+          fill: #55ACEE;
+          color: #55ACEE;
+      }
+      .pred {
+          fill: #ffa500;
+          color: #ffa500;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Tweets!</h1>
+  </body>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      var es = new EventSource("http://localhost:3000/tweets")
+        , api = "ws://oculus360-yhat-8728a646-1064030993.us-west-1.elb.amazonaws.com/models/word2vec/"
+      var ws = new WebSocket(api);
+
+      ws.onopen = function(evt) {
+        console.log("we're open!");
+      };
+      ws.onmessage = function(evt) {
+        var data = JSON.parse(evt.data);
+        console.log(JSON.stringify(data));
+      };
+
+      es.addEventListener("message", function(e) {
+        var data = JSON.parse(e.data);
+        addTweet(data);
+        setTimeout(function() {
+          removeTweet(data.id)
+          }, 2000);
+        data.text.split().forEach(function(w) {
+          ws.send(JSON.stringify({ word: w }));
+        });
+      }, false);
+      
+      es.addEventListener("open", function(e) {
+          console.log("connection was opened");
+      }, false);
+
+      es.addEventListener("error", function(e) {
+          if (e.readyState == EventSource.CLOSED) {
+              console.log("connection was closed");
+          }
+      }, false);
+
+ 
+      animate();
+    });
+  </script>
+</html>

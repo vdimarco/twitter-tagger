@@ -45,6 +45,14 @@ app.get('/', function(req, res) {
   res.render('index', { title: "Twitter Feed | Predictions", keywords: tags.join(", ")});
 });
 
+app.get('/raw', function(req, res) {
+  res.render('raw', { title: "Twitter Feed", keywords: tags.join(", ") });
+});
+
+app.get('/fun', function(req, res) {
+  res.render("fun");
+});
+
 app.get('/tweets', function(req, res) {
   // keep the connection open indefinitely
   req.socket.setTimeout(Infinity);
@@ -76,17 +84,7 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-/*var tags = [
-  "pizza",
-  "george bush",
-  "barack obama",
-  "mitt romney",
-  "hilary clinton"
-];
-*/
-
-var tags = ["S&P 500"];
-var tags = ["pizza", "sandwich", "juice"];
+var tags = ["pizza", "chinese"];
 
 twit.stream('statuses/filter', { track: tags }, function(stream) {
   stream.on('data', function(tweet) {
@@ -96,7 +94,7 @@ twit.stream('statuses/filter', { track: tags }, function(stream) {
       hashtags.push("#" + ht.text);
     });
     _.each(connections, function(conn) {
-      conn.send(JSON.stringify({ text: text, hashtags: hashtags.join(", ")}));
+      conn.send({ id: tweet.id, text: text, hashtags: hashtags.join(", ")});
     });
   });
 });

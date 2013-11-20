@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/javascripts/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/javascripts/color-gradient.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <h1>Tweets mentioning: <%= keywords %></h1>
+    <pre id="console"></pre>
+
+    <script type="text/javascript">
+        var es = new EventSource("http://localhost:3000/tweets")
+
+        es.addEventListener("message", function(e) {
+            var data = JSON.parse(e.data)
+              , html = "<p>" + data.hashtags + "-->" + data.text  + "</p>";
+            $("#console").prepend(html);
+            $("#console").children().slice(15, $("#console").children().length).remove();
+        }, false);
+        
+        es.addEventListener("open", function(e) {
+            console.log("connection was opened");
+        }, false);
+
+        es.addEventListener("error", function(e) {
+            if (e.readyState == EventSource.CLOSED) {
+                console.log("connection was closed");
+            }
+        }, false);
+
+    </script>
+
+  </body>
+</html>
