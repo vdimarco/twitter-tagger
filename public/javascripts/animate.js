@@ -8,28 +8,6 @@ animate = function() {
     .append("g")
       .attr("class", "input")
       .attr("transform", "translate(32," + (height / 4) + ")")
-  svg.append("text")
-    .data([{
-      x: width - 250,
-      y: 0,
-      name: "Column A",
-      total: 0
-    }])
-    .attr("x", function(d) { return d.x; })
-    .attr("y", function(d) { return d.y; })
-    .text(function(d) { return d.name + ": " + d.total })
-    .attr("id", "columna");
-  svg.append("text")
-    .data([{
-      x: width - 250,
-      y: height - 300,
-      name: "Column B",
-      total: 0
-    }])
-    .attr("x", function(d) { return d.x; })
-    .attr("y", function(d) { return d.y; })
-    .text(function(d) { return d.name + ": " + d.total })
-    .attr("id", "columnb");
 };
 
 
@@ -52,8 +30,6 @@ addTweet = function(tweet) {
 };
 
 addPred = function(tweet) {
-  // DATA JOIN
-  // Join new data with old elements, if any.
   var svg = d3.select(".output")
     , h = $(".pred").last().attr("y") || "-15"
     , h = parseInt(h) + 15;
@@ -88,6 +64,13 @@ removeTweet = function(id) {
       .attr("x", width - 250)
       .duration(2000)
       .remove();
+  if (yloc==0) {
+    var n = parseInt($("#columna").text().split(': ')[1]) + 1;
+    $("#columna").text("Column A: " + n);
+  } else {
+    var n = parseInt($("#columnb").text().split(': ')[1]) + 1;
+    $("#columnb").text("Column B: " + n);
+  }
 
   d3.selectAll(".pred")
     .attr("y", function(d, i) {

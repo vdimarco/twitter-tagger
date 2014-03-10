@@ -9,12 +9,11 @@ var express = require('express')
   , path = require('path')
   , uuid = require('uuid')
   , _ = require('underscore')
-  , twitter = require('ntwitter');
+  , twitter = require('ntwitter')
+  , tags = ["obama", "putin", "ukraine"]
+  , n = 0;
 
 GLOBAL.connections = {};
-var tickers = fs.readFileSync('tickers.txt')
-                .toString().trim().split('\n')
-                .map(function(t) { return "$" + t });
 
 var twit = new twitter({
   consumer_key: 'oHnyGpc65JKXv3ZQ7PNesQ',
@@ -42,7 +41,8 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', function(req, res) {
-  res.render('index', { title: "Twitter Feed | Predictions", keywords: tags.join(", ")});
+  n = (n+1) % 5;
+  res.render("classifier", { tags: tags, MODEL_N: n});
 });
 
 app.get('/raw', function(req, res) {
@@ -51,6 +51,11 @@ app.get('/raw', function(req, res) {
 
 app.get('/fun', function(req, res) {
   res.render("fun");
+});
+
+app.get('/classifier', function(req, res) {
+  n = (n+1) % 5;
+  res.render("classifier", { tags: tags, MODEL_N: n});
 });
 
 app.get('/tweets', function(req, res) {
@@ -84,17 +89,11 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-var tags = ["pizza", "chinese"];
 
 twit.stream('statuses/filter', { track: tags }, function(stream) {
   stream.on('data', function(tweet) {
-    var text = tweet.text;
-    var hashtags = [];
-    tweet.entities.hashtags.forEach(function(ht) {
-      hashtags.push("#" + ht.text);
-    });
     _.each(connections, function(conn) {
-      conn.send({ id: tweet.id, text: text, hashtags: hashtags.join(", ")});
+      conn.send(tweet);
     });
   });
 });

@@ -6,3 +6,25 @@ body {
 a {
   color: #00B7FF;
 }
+
+.untagged {
+  background-color: #EBC2D6;
+}
+.tagged {
+  background-color: #FFFFCC;
+}
+
+.person {
+  background-color: coral;
+}
+.place {
+  background-color: #99FFFF;
+}
+
+PERSON {
+  background-color: coral;
+}
+
+PLACE {
+  background-color: #99FFFF;
+}

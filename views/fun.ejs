@@ -36,7 +36,6 @@
       };
       ws.onmessage = function(evt) {
         var data = JSON.parse(evt.data);
-        console.log(JSON.stringify(data));
       };
 
       es.addEventListener("message", function(e) {
