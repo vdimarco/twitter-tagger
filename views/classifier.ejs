@@ -7,7 +7,7 @@
     <script src="/javascripts/d3.js" type="text/javascript"></script>
   </head>
   <body>
-    <h1><img src="/images/twitter-logo-blue.png" style="height: 40px">#putin #obama #ukraine</h1>
+    <h1 id="tags"><img src="/images/twitter-logo-blue.png" style="height: 40px"></h1>
     <table border=1>
       <tr><td class="untagged">UNTAGGED</td></tr>
       <tr><td class="tagged">TAGGED</td></tr>
@@ -30,6 +30,9 @@
       var ws = new WebSocket(api);
       // words we're keying off of
       var tags = <%- JSON.stringify(tags) %>;
+      tags.forEach(function(tag) {
+        $("#tags").text($("#tags").text() + "#" + tag + " ");
+      });
       
       setInterval(function() {
         if (is_on==false) {
