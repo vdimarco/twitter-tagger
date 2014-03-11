@@ -14,23 +14,33 @@
       <tr><td class="person">PERSON</td></tr>
       <tr><td class="place">PLACE</td></tr>
     </table>
-    <div id="tweets"></div>
+    <div id="tweets">
+      <h1 id="status">Connecting...</h1>
+    </div>
   </body>
 
   <script type="text/javascript">
     $(document).ready(function() {
       var es = new EventSource("http://localhost:3000/tweets")
         , modelN = <%- MODEL_N %>
-        , api = "ws://cloud.yhathq.com/greg/models/NamedEntityTagger/"
-        , api = "ws://cloud.yhathq.com/greg/models/NamedEntityTagger" + modelN + "/"
-        , is_on = false;
+      // "load balancing"
+      var api = "ws://cloud.yhathq.com/greg/models/NamedEntityTagger" + modelN + "/";
+      // indicator for whether or not we have an open connection
+      var is_on = false;
       var ws = new WebSocket(api);
+      // words we're keying off of
       var tags = <%- JSON.stringify(tags) %>;
+      
+      setInterval(function() {
+        if (is_on==false) {
+          $("#status").text($("#status").text() + " ...");
+        }
+      }, 1000);
 
-      console.log("CONNECTED TO: ws://cloud.yhathq.com/greg/models/NamedEntityTagger" + modelN + "/");
       ws.onerror = function (error) {
         console.log(JSON.stringify(error));
-        //location.reload();
+        alert("An error occurred :(");
+        setTimeout(function() { location.reload(); }, 2500);
       };
 
       ws.onopen = function(evt) {
@@ -38,10 +48,16 @@
           username: "greg",
           apikey: "fCVZiLJhS95cnxOrsp5e2VSkk0GfypZqeRCntTD1nHA"
         }));
-        console.log("we're open!");
-        is_on = true;
+        console.log("CONNECTED TO SERVER #" + modelN);
+        $("#status").text("Connected! starting stream...");
+        ws.send(JSON.stringify({ id: 1, text: "hello"}));
       };
       ws.onmessage = function(evt) {
+        if (is_on==false) {
+          is_on = true;
+          $("#tweets").children().remove();
+          return;
+        }
         var data = JSON.parse(evt.data);
         $("#" + data.id).removeClass("untagged");
         $("#" + data.id).addClass("tagged");
@@ -62,8 +78,8 @@
           text = text.replace(new RegExp('(' + tag + ')', 'gi'), "<b>" + tag + "</b>");
         });
         
-        $("#tweets").prepend("<p id='" + data.id + "'class='untagged'>" + text + "</p>");
         if (is_on==true) {
+          $("#tweets").prepend("<p id='" + data.id + "'class='untagged'>" + text + "</p>");
           ws.send(JSON.stringify(data));
         }
       }, false);
