@@ -10,9 +10,14 @@ var express = require('express')
   , uuid = require('uuid')
   , _ = require('underscore')
   , twitter = require('ntwitter')
-  , tags = ["obama", "putin", "ukraine"]
   , n = 0;
 
+var tags = process.argv.slice(2);
+if (tags.length==0) {
+  tags = ["obama", "putin", "ukraine"];
+}
+
+console.log("WATCHING TWEETS CONTAINING: " + tags.join(", "));
 GLOBAL.connections = {};
 
 var twit = new twitter({
