@@ -1,5 +1,5 @@
 {
-  "name": "yhat-twitter",
+  "name": "twitter-tagger",
   "version": "0.0.1",
   "private": true,
   "scripts": {
