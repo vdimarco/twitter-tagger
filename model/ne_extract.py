@@ -30,7 +30,7 @@ class Tagger(YhatModel):
 
 tg = Tagger()
 
-yh = Yhat("greg", "fCVZiLJhS95cnxOrsp5e2VSkk0GfypZqeRCntTD1nHA", "http://cloud.yhathq.com/")
+yh = Yhat("greg", "fCVZiLJhS95cnxOrsp5e2VSkk0GfypZqeRCntTD1nHA", "http://sandbox.yhathq.com/")
 for i in range(5):
     print yh.deploy("NamedEntityTagger" + str(i), Tagger, globals())
 

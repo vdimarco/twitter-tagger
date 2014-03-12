@@ -7,7 +7,11 @@
     <script src="/javascripts/d3.js" type="text/javascript"></script>
   </head>
   <body>
-    <h1 id="tags"><img src="/images/twitter-logo-blue.png" style="height: 40px"></h1>
+    <img src="/images/yhat_logo.png" style="height: 40px">
+    <img src="/images/twitter-logo-blue.png" style="height: 40px">
+    <h1 id="tags"></h1>
+    <h1 id="n_tweets"></h1>
+    <h1 id="n_tagged"></h1>
     <table border=1>
       <tr><td class="untagged">UNTAGGED</td></tr>
       <tr><td class="tagged">TAGGED</td></tr>
@@ -21,10 +25,13 @@
 
   <script type="text/javascript">
     $(document).ready(function() {
-      var es = new EventSource("http://localhost:3000/tweets")
+      var es = new EventSource("/tweets")
         , modelN = <%- MODEL_N %>
+        , hostname = "<%- servername %>"
+        , total = 0
+        , tagged = 0;
       // "load balancing"
-      var api = "ws://cloud.yhathq.com/greg/models/NamedEntityTagger" + modelN + "/";
+      var api = "ws://"+hostname+".yhathq.com/greg/models/NamedEntityTagger" + modelN + "/";
       // indicator for whether or not we have an open connection
       var is_on = false;
       var ws = new WebSocket(api);
@@ -51,17 +58,21 @@
           username: "greg",
           apikey: "fCVZiLJhS95cnxOrsp5e2VSkk0GfypZqeRCntTD1nHA"
         }));
-        console.log("CONNECTED TO SERVER #" + modelN);
+        console.log("CONNECTED TO "+hostname+"#"+modelN);
         $("#status").text("Connected! starting stream...");
         ws.send(JSON.stringify({ id: 1, text: "hello"}));
       };
       ws.onmessage = function(evt) {
+        tagged++;
+        $("#n_tweets").text("Seen: " + total);
+        $("#n_tagged").text("Tagged: " + tagged);
         if (is_on==false) {
           is_on = true;
           $("#tweets").children().remove();
           return;
         }
         var data = JSON.parse(evt.data);
+        data = data.result || data;
         $("#" + data.id).removeClass("untagged");
         $("#" + data.id).addClass("tagged");
         text = data.tagged;
@@ -83,6 +94,9 @@
         
         if (is_on==true) {
           $("#tweets").prepend("<p id='" + data.id + "'class='untagged'>" + text + "</p>");
+          total++;
+          $("#n_tweets").text("Seen: " + total);
+          $("#n_tagged").text("Tagged: " + tagged);
           ws.send(JSON.stringify(data));
         }
       }, false);

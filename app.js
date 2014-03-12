@@ -10,7 +10,16 @@ var express = require('express')
   , uuid = require('uuid')
   , _ = require('underscore')
   , twitter = require('ntwitter')
+  , servername = "cloud"
   , n = 0;
+
+function rotateServer() {
+  if (servername=="cloud") {
+    servername = "sandbox";
+  } else {
+    servername = "cloud";
+  }
+}
 
 var tags = process.argv.slice(2);
 if (tags.length==0) {
@@ -46,8 +55,9 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', function(req, res) {
+  rotateServer();
   n = (n+1) % 5;
-  res.render("classifier", { tags: tags, MODEL_N: n});
+  res.render("classifier", { tags: tags, MODEL_N: n, servername: servername });
 });
 
 app.get('/raw', function(req, res) {
@@ -59,8 +69,9 @@ app.get('/fun', function(req, res) {
 });
 
 app.get('/classifier', function(req, res) {
+  rotateServer();
   n = (n+1) % 5;
-  res.render("classifier", { tags: tags, MODEL_N: n});
+  res.render("classifier", { tags: tags, MODEL_N: n, servername: servername });
 });
 
 app.get('/tweets', function(req, res) {
@@ -93,7 +104,6 @@ app.get('/tweets', function(req, res) {
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
-
 
 twit.stream('statuses/filter', { track: tags }, function(stream) {
   stream.on('data', function(tweet) {
