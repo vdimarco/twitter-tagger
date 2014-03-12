@@ -29,7 +29,7 @@
         , modelN = <%- MODEL_N %>
         , hostname = "<%- servername %>"
         , total = 0
-        , tagged = 0;
+        , tagged = -1;
       // "load balancing"
       var api = "ws://"+hostname+".yhathq.com/greg/models/NamedEntityTagger" + modelN + "/";
       // indicator for whether or not we have an open connection
