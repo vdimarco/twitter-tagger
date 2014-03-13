@@ -1,0 +1,95 @@
+//
+// Utility classes
+// --------------------------------------------------
+
+
+// Floats
+// -------------------------
+
+.clearfix {
+  .clearfix();
+}
+.center-block {
+  .center-block();
+}
+.pull-right {
+  float: right !important;
+}
+.pull-left {
+  float: left !important;
+}
+
+
+// Toggling content
+// -------------------------
+
+// Note: Deprecated .hide in favor of .hidden or .sr-only (as appropriate) in v3.0.1
+.hide {
+  display: none !important;
+}
+.show {
+  display: block !important;
+}
+.invisible {
+  visibility: hidden;
+}
+.text-hide {
+  .text-hide();
+}
+
+
+// Hide from screenreaders and browsers
+//
+// Credit: HTML5 Boilerplate
+
+.hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+
+// For Affix plugin
+// -------------------------
+
+.affix {
+  position: fixed;
+}
+
+
+.yo {
+    color:@yhat-orange;
+}
+
+.yg {
+    color:@yhat-grey;
+}
+
+.search-highlight {
+    background-color: yellow;
+    font-weight:bold;
+}
+
+.untagged {
+  background-color:@state-danger-bg;
+}
+
+.tagged {
+  background-color:@state-warning-bg;
+}
+
+.person {
+  background-color:@state-info-bg;
+}
+.place {
+  background-color:@state-success-bg;
+}
+
+person {
+  background-color:@state-info-bg;
+  color: darken(@brand-info, 20%);
+}
+
+place {
+  background-color:@state-success-bg;
+  color: darken(@brand-success, 20%);
+}

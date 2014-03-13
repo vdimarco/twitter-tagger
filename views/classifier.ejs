@@ -2,115 +2,60 @@
 <html>
   <head>
     <title>Named Entity Tagger</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="/javascripts/jquery-1.10.2.min.js" type="text/javascript"></script>
-    <script src="/javascripts/d3.js" type="text/javascript"></script>
+    <link rel='stylesheet' href='/css/styles.css' />
   </head>
   <body>
-    <img src="/images/yhat_logo.png" style="height: 40px">
-    <img src="/images/twitter-logo-blue.png" style="height: 40px">
-    <h1 id="tags"></h1>
-    <h1 id="n_tweets"></h1>
-    <h1 id="n_tagged"></h1>
-    <table border=1>
-      <tr><td class="untagged">UNTAGGED</td></tr>
-      <tr><td class="tagged">TAGGED</td></tr>
-      <tr><td class="person">PERSON</td></tr>
-      <tr><td class="place">PLACE</td></tr>
-    </table>
-    <div id="tweets">
-      <h1 id="status">Connecting...</h1>
+    <div class="container">
+      <h1 class="logo">
+        <a href="/">
+            <span class="yo">ŷ</span><span class="yg">hat</span>
+            <!--<img class="hat" src="img/hat-vday.svg" alt=""/>-->
+        </a>
+        <span class="plus">&plus;</span>
+        <img class="twitter" src="/images/twitter-logo-blue.png" alt="">
+      </h1>
+
+      <div class="row boxes">
+        <div class="col-sm-6">
+            <h5>Tags</h5>
+            <p id="tags" class="lead"></p>
+        </div>
+        <div class="col-sm-3">
+            <h5>Seen</h5>
+            <p id="n_tweets" class="lead"></p>
+        </div>
+        <div class="col-sm-3">
+            <h5>Tagged</h5>
+            <p id="n_tagged" class="lead"></p>
+        </div>
+      </div>
+
+      <div class="row text-center">
+        <div class="col-md-3 untagged">
+          <h5>UNTAGGED</h5>
+        </div>
+        <div class="col-md-3 tagged">
+          <h5>TAGGED</h5>
+        </div>
+        <div class="col-md-3 person">
+          <h5>PERSON</h5>
+        </div>
+        <div class="col-md-3 place">
+          <h5>PLACE</h5>
+        </div>
+      </div>
+
+      <div id="tweets">
+        <h3 id="status">Connecting...</h3>
+      </div>
     </div>
+
+    <script src="/js/jquery-1.10.2.min.js"></script>
+    <script src="/js/event.js"></script>
+    <script type="text/javascript">
+      var modelN = <%- MODEL_N %>,
+          hostname = "<%- servername %>",
+          tags = <%- JSON.stringify(tags) %>;
+    </script>
   </body>
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-      var es = new EventSource("/tweets")
-        , modelN = <%- MODEL_N %>
-        , hostname = "<%- servername %>"
-        , total = 0
-        , tagged = -1;
-      // "load balancing"
-      var api = "ws://"+hostname+".yhathq.com/greg/models/NamedEntityTagger" + modelN + "/";
-      // indicator for whether or not we have an open connection
-      var is_on = false;
-      var ws = new WebSocket(api);
-      // words we're keying off of
-      var tags = <%- JSON.stringify(tags) %>;
-      tags.forEach(function(tag) {
-        $("#tags").text($("#tags").text() + "#" + tag + " ");
-      });
-      
-      setInterval(function() {
-        if (is_on==false) {
-          $("#status").text($("#status").text() + " ...");
-        }
-      }, 1000);
-
-      ws.onerror = function (error) {
-        console.log(JSON.stringify(error));
-        alert("An error occurred :(");
-        setTimeout(function() { location.reload(); }, 2500);
-      };
-
-      ws.onopen = function(evt) {
-        ws.send(JSON.stringify({
-          username: "greg",
-          apikey: "fCVZiLJhS95cnxOrsp5e2VSkk0GfypZqeRCntTD1nHA"
-        }));
-        console.log("CONNECTED TO "+hostname+"#"+modelN);
-        $("#status").text("Connected! starting stream...");
-        ws.send(JSON.stringify({ id: 1, text: "hello"}));
-      };
-      ws.onmessage = function(evt) {
-        tagged++;
-        $("#n_tweets").text("Seen: " + total);
-        $("#n_tagged").text("Tagged: " + tagged);
-        if (is_on==false) {
-          is_on = true;
-          $("#tweets").children().remove();
-          return;
-        }
-        var data = JSON.parse(evt.data);
-        data = data.result || data;
-        $("#" + data.id).removeClass("untagged");
-        $("#" + data.id).addClass("tagged");
-        text = data.tagged;
-        tags.forEach(function(tag) {
-          text = text.replace(new RegExp('(' + tag + ')', 'gi'), "<b>" + tag + "</b>");
-        });
-        $("#" + data.id).html(text);
-        setTimeout(function() {
-          $("#" + data.id).remove();
-        }, 3000);
-      };
-
-      es.addEventListener("message", function(e) {
-        var data = JSON.parse(e.data);
-        text = data.text;
-        tags.forEach(function(tag) {
-          text = text.replace(new RegExp('(' + tag + ')', 'gi'), "<b>" + tag + "</b>");
-        });
-        
-        if (is_on==true) {
-          $("#tweets").prepend("<p id='" + data.id + "'class='untagged'>" + text + "</p>");
-          total++;
-          $("#n_tweets").text("Seen: " + total);
-          $("#n_tagged").text("Tagged: " + tagged);
-          ws.send(JSON.stringify(data));
-        }
-      }, false);
-      
-      es.addEventListener("open", function(e) {
-          console.log("connection was opened");
-      }, false);
-
-      es.addEventListener("error", function(e) {
-          if (e.readyState == EventSource.CLOSED) {
-              console.log("connection was closed");
-          }
-      }, false);
-
-    });
-  </script>
 </html>

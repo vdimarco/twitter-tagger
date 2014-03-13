@@ -3,15 +3,16 @@
  * Module dependencies.
  */
 
-var express = require('express')
-  , http = require('http')
-  , fs = require('fs')
-  , path = require('path')
-  , uuid = require('uuid')
-  , _ = require('underscore')
-  , twitter = require('ntwitter')
-  , servername = "cloud"
-  , n = 0;
+var express = require('express'),
+    http = require('http'),
+    fs = require('fs'),
+    path = require('path'),
+    uuid = require('uuid'),
+    _ = require('underscore'),
+    twitter = require('ntwitter'),
+    servername = "cloud",
+    lessMiddleware = require('less-middleware'),
+    n = 0;
 
 function rotateServer() {
   if (servername=="cloud") {
@@ -22,7 +23,7 @@ function rotateServer() {
 }
 
 var tags = process.argv.slice(2);
-if (tags.length==0) {
+if (tags.length == 0) {
   tags = ["obama", "putin", "ukraine"];
 }
 
@@ -47,6 +48,10 @@ app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(app.router);
+app.use(lessMiddleware(path.join(__dirname, 'public'), {}, {}, {
+  compress: true,
+  sourceMap: true
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only

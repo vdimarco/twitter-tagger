@@ -11,7 +11,8 @@
     "ejs": "*",
     "ntwitter": "~0.5.0",
     "uuid": "~1.4.1",
-    "underscore": "~1.5.2"
+    "underscore": "~1.5.2",
+    "less-middleware": "^0.2.1-beta"
   },
   "engines": {
     "node": "0.10.x"
