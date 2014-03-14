@@ -113,6 +113,9 @@ http.createServer(app).listen(app.get('port'), function(){
 twit.stream('statuses/filter', { track: tags }, function(stream) {
   stream.on('data', function(tweet) {
     _.each(connections, function(conn) {
+      if (/^RT/.exec(tweet.text) || tweet.retweet==true) {
+        return;
+      }
       conn.send(tweet);
     });
   });
