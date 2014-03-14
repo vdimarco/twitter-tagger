@@ -31,10 +31,10 @@ console.log("WATCHING TWEETS CONTAINING: " + tags.join(", "));
 GLOBAL.connections = {};
 
 var twit = new twitter({
-  consumer_key: 'oHnyGpc65JKXv3ZQ7PNesQ',
-  consumer_secret: 'UdEKjKWi7ktpJvdRT9tHJ1qqGYifd8Ssk09L9Oc4Om8',
-  access_token_key: '426838000-KsuW4PXOXqlMNWMHMY5rKLZssDywn1jxNakffyYq',
-  access_token_secret: 'F89gbk2iakws9vJNbts0IYuj6woVZDYwSVxsZnO0b6Ucd'
+  consumer_key: process.env["consumer_key"],
+  consumer_secret: process.env["consumer_secret"],
+  access_token_key: process.env["access_token_key"],
+  access_token_secret: process.env["access_token_secret"],
 });
 
 var app = express();
