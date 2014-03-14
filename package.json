@@ -1,7 +1,7 @@
 {
   "name": "twitter-tagger",
   "subdomain": "twitter-tagger",
-  "version": "0.0.1-17",
+  "version": "0.0.1-18",
   "private": true,
   "scripts": {
     "start": "node app.js"
