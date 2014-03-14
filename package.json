@@ -1,7 +1,7 @@
 {
   "name": "twitter-tagger",
   "subdomain": "twitter-tagger",
-  "version": "0.0.1-6",
+  "version": "0.0.1-11",
   "private": true,
   "scripts": {
     "start": "node app.js"
@@ -16,5 +16,8 @@
   },
   "engines": {
     "node": "0.10.x"
-  }
+  },
+  "domains": [
+    "twitter-tagger.yhathq.com"
+  ]
 }
